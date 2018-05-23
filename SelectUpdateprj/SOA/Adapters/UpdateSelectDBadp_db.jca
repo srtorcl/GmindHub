@@ -1,0 +1,14 @@
+<adapter-config name="UpdateSelectDBadp" adapter="db" wsdlLocation="../WSDLs/UpdateSelectDBadp.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIConnectionName="LocalDB" location="eis/DB/EmpDetails"/>
+  <endpoint-interaction portType="UpdateSelectDBadp_ptt" operation="UpdateSelectDBadpSelect">
+    <interaction-spec className="oracle.tip.adapter.db.DBReadInteractionSpec">
+      <property name="DescriptorName" value="UpdateSelectDBadp.Emp"/>
+      <property name="QueryName" value="UpdateSelectDBadpSelect"/>
+      <property name="MappingsMetaDataURL" value="UpdateSelectDBadp-or-mappings.xml"/>
+      <property name="ReturnSingleResultSet" value="false"/>
+      <property name="GetActiveUnitOfWork" value="false"/>
+    </interaction-spec>
+  </endpoint-interaction>
+
+</adapter-config>

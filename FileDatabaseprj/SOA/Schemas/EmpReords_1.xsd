@@ -1,0 +1,17 @@
+<?xml version= '1.0' encoding= 'UTF-8' ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:Gmind="http://www.GmindTechnologies.org"
+     targetNamespace="http://www.GmindTechnologies.org" elementFormDefault="qualified">
+    <xsd:element name="EmpDetails">
+        <xsd:annotation>
+            <xsd:documentation>A sample element</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Empno" type="xsd:int"/>
+                <xsd:element name="ename" type="xsd:string"/>
+                <xsd:element name="loc" type="xsd:string"/>
+                <xsd:element name="sal" type="xsd:int"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

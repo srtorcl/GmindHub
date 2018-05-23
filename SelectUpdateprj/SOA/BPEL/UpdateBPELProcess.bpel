@@ -1,0 +1,94 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed May 23 14:22:10 EDT 2018
+  Author:  Srinivas
+  Type: BPEL 2.0 Process
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="UpdateBPELProcess"
+               targetNamespace="http://xmlns.oracle.com/DatabaseApplication/SelectUpdateprj/UpdateBPELProcess"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/DatabaseApplication/SelectUpdateprj/UpdateBPELProcess"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:ui="http://xmlns.oracle.com/soa/designer"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/SelectUpdateprj/UpdateSelectDBadp"
+         xmlns:ns3="http://xmlns.oracle.com/pcbpel/adapter/db/top/UpdateSelectDBadp" xmlns:ns2="http://www.example.org"
+         xmlns:ns4="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/SelectUpdateprj/UpdateDB"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:ns5="http://xmlns.oracle.com/pcbpel/adapter/db/top/UpdateDB">
+
+    <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/DatabaseApplication/SelectUpdateprj/UpdateBPELProcess" location="../WSDLs/UpdateBPELProcess.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="updatebpelprocess_client" partnerLinkType="client:UpdateBPELProcess" myRole="UpdateBPELProcessProvider"/>
+    <partnerLink name="UpdateSelectDBadp" partnerLinkType="ns1:UpdateSelectDBadp_plt"
+                 partnerRole="UpdateSelectDBadp_role"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="client:UpdateBPELProcessRequestMessage"/>
+
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="outputVariable" messageType="client:UpdateBPELProcessResponseMessage"/>
+    <variable name="Invoke1_UpdateSelectDBadpSelect_InputVariable"
+              messageType="ns1:UpdateSelectDBadpSelect_inputParameters"/>
+    <variable name="Invoke1_UpdateSelectDBadpSelect_OutputVariable" messageType="ns1:EmpCollection_msg"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in UpdateBPELProcess.wsdl) -->
+    <receive name="receiveInput" partnerLink="updatebpelprocess_client" portType="client:UpdateBPELProcess" operation="process" variable="inputVariable" createInstance="yes"/>
+    <assign name="Assign1">
+      <copy>
+        <from>$inputVariable.payload/ns2:empid</from>
+        <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$Invoke1_UpdateSelectDBadpSelect_InputVariable.UpdateSelectDBadpSelect_inputParameters/ns3:empid</to>
+      </copy>
+    </assign>
+    <invoke name="Invoke1" partnerLink="UpdateSelectDBadp"
+            portType="ns1:UpdateSelectDBadp_ptt" operation="UpdateSelectDBadpSelect"
+            inputVariable="Invoke1_UpdateSelectDBadpSelect_InputVariable"
+            outputVariable="Invoke1_UpdateSelectDBadpSelect_OutputVariable" bpelx:invokeAsDetail="no"/>
+    <assign name="Transformation1">
+      <bpelx:annotation>
+        <bpelx:pattern patternName="bpelx:transformation"></bpelx:pattern>
+      </bpelx:annotation>
+      <copy>
+        <from>ora:doXSLTransformForDoc("../Transformations/Transformation1_1.xsl", $Invoke1_UpdateSelectDBadpSelect_OutputVariable.EmpCollection)</from>
+        <to variable="outputVariable" part="payload"/>
+      </copy>
+    </assign>
+    <!-- Generate reply to synchronous request -->
+    <reply name="replyOutput" partnerLink="updatebpelprocess_client" portType="client:UpdateBPELProcess" operation="process" variable="outputVariable"/>
+  </sequence>
+</process>

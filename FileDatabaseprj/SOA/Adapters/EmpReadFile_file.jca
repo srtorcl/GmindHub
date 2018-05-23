@@ -1,0 +1,17 @@
+<adapter-config name="EmpReadFile" adapter="file" wsdlLocation="../WSDLs/EmpReadFile.wsdl" xmlns="http://platform.integration.oracle/blocks/adapter/fw/metadata">
+  
+  <connection-factory UIincludeWildcard="Emp*.xml" location="eis/FILE/Sruthi"/>
+  <endpoint-activation portType="Read_ptt" operation="Read">
+    <activation-spec className="oracle.tip.adapter.file.inbound.FileActivationSpec">
+      <property name="PhysicalDirectory" value="D:\SampleDBproject"/>
+      <property name="PhysicalArchiveDirectory" value="C:\DP1"/>
+      <property name="UseHeaders" value="false"/>
+      <property name="MinimumAge" value="0"/>
+      <property name="Recursive" value="true"/>
+      <property name="PollingFrequency" value="60"/>
+      <property name="DeleteFile" value="true"/>
+      <property name="IncludeFiles" value="Emp.*\.xml"/>
+    </activation-spec>
+  </endpoint-activation>
+
+</adapter-config>

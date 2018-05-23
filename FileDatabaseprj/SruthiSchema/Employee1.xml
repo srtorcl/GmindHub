@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<exampleElement xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.GmindTechnologies.org /D:/SampleDBproject/EmployeeRecords.xsd"
+                xmlns="http://www.GmindTechnologies.org"></exampleElement>
