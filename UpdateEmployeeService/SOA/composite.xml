@@ -11,6 +11,42 @@
            xmlns:orawsp="http://schemas.oracle.com/ws/2006/01/policy"
            xmlns:ui="http://xmlns.oracle.com/soa/designer/"
            xmlns:sca-ext="http://xmlns.oracle.com/sca/1.0-ext">
+  <import namespace="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess"
+          location="WSDLs/EmpUpdateProcess.wsdl" importType="wsdl"/>
+  <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/UpdateEmployeeService/empUpdateDB"
+          location="WSDLs/empUpdateDB.wsdl" importType="wsdl"/>
+  <service name="empupdateprocess_client_ep" ui:wsdlLocation="WSDLs/EmpUpdateProcess.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess#wsdl.interface(EmpUpdateProcess)"/>
+    <binding.ws port="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess#wsdl.endpoint(empupdateprocess_client_ep/EmpUpdateProcess_pt)"/>
+  </service>
   <property name="productVersion" type="xs:string" many="false">12.2.1.1.0.160608</property>
   <property name="compositeID" type="xs:string" many="false">712c8a50-937e-49bb-add2-d96958d4f258</property>
+  <component name="EmpUpdateProcess" version="2.0">
+    <implementation.bpel src="BPEL/EmpUpdateProcess.bpel"/>
+    <componentType>
+      <service name="empupdateprocess_client" ui:wsdlLocation="WSDLs/EmpUpdateProcess.wsdl">
+        <interface.wsdl interface="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess#wsdl.interface(EmpUpdateProcess)"/>
+      </service>
+      <reference name="empUpdateDB" ui:wsdlLocation="WSDLs/empUpdateDB.wsdl">
+        <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/UpdateEmployeeService/empUpdateDB#wsdl.interface(empUpdateDB_ptt)"/>
+      </reference>
+    </componentType>
+    <property name="bpel.config.oneWayDeliveryPolicy" type="xs:string" many="false">async.persist</property>
+  </component>
+  <reference name="empUpdateDB" ui:wsdlLocation="WSDLs/empUpdateDB.wsdl">
+    <interface.wsdl interface="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/UpdateEmployeeService/empUpdateDB#wsdl.interface(empUpdateDB_ptt)"/>
+    <binding.jca config="Adapters/empUpdateDB_db.jca"/>
+    <property name="jca.retry.count" type="xs:int" many="false" override="may">4</property>
+    <property name="jca.retry.interval" type="xs:int" many="false" override="may">1</property>
+    <property name="jca.retry.backoff" type="xs:int" many="false" override="may">2</property>
+    <property name="jca.retry.maxInterval" type="xs:int" many="false" override="may">120</property>
+  </reference>
+  <wire>
+    <source.uri>empupdateprocess_client_ep</source.uri>
+    <target.uri>EmpUpdateProcess/empupdateprocess_client</target.uri>
+  </wire>
+  <wire>
+    <source.uri>EmpUpdateProcess/empUpdateDB</source.uri>
+    <target.uri>empUpdateDB</target.uri>
+  </wire>
 </composite>

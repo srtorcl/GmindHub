@@ -1,0 +1,74 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Thu May 24 13:46:10 EDT 2018
+  Author:  Srinivas
+  Type: BPEL 2.0 Process
+  Purpose: One Way BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="EmpUpdateProcess"
+               targetNamespace="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess"
+               xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+               xmlns:client="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess"
+               xmlns:ora="http://schemas.oracle.com/xpath/extension"
+               xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+               xmlns:ui="http://xmlns.oracle.com/soa/designer"
+               xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/db/DatabaseApplication/UpdateEmployeeService/empUpdateDB">
+
+  <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/DatabaseApplication/UpdateEmployeeService/EmpUpdateProcess" location="../WSDLs/EmpUpdateProcess.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  --> 
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="empupdateprocess_client" partnerLinkType="client:EmpUpdateProcess" myRole="EmpUpdateProcessProvider"/>
+    <partnerLink name="empUpdateDB" partnerLinkType="ns1:empUpdateDB_plt" partnerRole="empUpdateDB_role"/>
+  </partnerLinks>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <variable name="inputVariable" messageType="client:EmpUpdateProcessRequestMessage"/>
+    <variable name="Invoke1_update_InputVariable" messageType="ns1:EmpCollection_msg"/>
+  </variables>
+
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+
+    <!-- Receive input from requestor. (Note: This maps to operation defined in EmpUpdateProcess.wsdl) -->
+    <receive name="receiveInput" partnerLink="empupdateprocess_client" portType="client:EmpUpdateProcess" operation="process" variable="inputVariable" createInstance="yes"/>
+    <assign name="Transformation1">
+      <bpelx:annotation>
+        <bpelx:pattern patternName="bpelx:transformation"></bpelx:pattern>
+      </bpelx:annotation>
+      <copy>
+        <from>ora:doXSLTransformForDoc("../Transformations/Transformation1_1.xsl", $inputVariable.payload)</from>
+        <to variable="Invoke1_update_InputVariable" part="EmpCollection"/>
+      </copy>
+    </assign>
+    <invoke name="Invoke1" bpelx:invokeAsDetail="no" partnerLink="empUpdateDB" portType="ns1:empUpdateDB_ptt"
+            operation="update" inputVariable="Invoke1_update_InputVariable"/>
+  </sequence>
+</process>
