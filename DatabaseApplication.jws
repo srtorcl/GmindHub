@@ -24,8 +24,12 @@
       <string v="oracle.jdeveloper.model.PathsConfiguration/ResourceBundlesContentSet"/>
    </list>
    <list n="listOfChildren">
+      <hash><url n="URL" path="DeleteDbprj/DeleteDbprj.jpr"/></hash>
       <hash><url n="URL" path="FileDatabaseprj/FileDatabaseprj.jpr"/></hash>
+      <hash><url n="URL" path="NewUpdate123prj/NewUpdate123prj.jpr"/></hash>
+      <hash><url n="URL" path="NewUpdateprj/NewUpdateprj.jpr"/></hash>
       <hash><url n="URL" path="SelectUpdateprj/SelectUpdateprj.jpr"/></hash>
       <hash><url n="URL" path="UpdateEmployeeService/UpdateEmployeeService.jpr"/></hash>
+      <hash><url n="URL" path="UpdateNewEmpprj/UpdateNewEmpprj.jpr"/></hash>
    </list>
 </jws:workspace>
